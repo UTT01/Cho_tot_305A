@@ -1,0 +1,55 @@
+<?php
+class Home extends controller
+{
+    public function Get_data()
+    {
+        $sanphamModel = $this->model('SanphamModel');
+
+        // Lấy tham số lọc/tìm kiếm từ URL
+        $keyword  = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $category = isset($_GET['danhmuc']) ? trim($_GET['danhmuc']) : '';
+        $address  = isset($_GET['diachi']) ? trim($_GET['diachi']) : '';
+        $page     = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+
+        // Debug: Uncomment to see what values are being received
+        // error_log("Search params - keyword: '$keyword', category: '$category', address: '$address'");
+
+        $limit  = 12; // số sản phẩm / 1 trang
+        $offset = ($page - 1) * $limit;
+
+        // Đếm tổng sản phẩm để phân trang
+        $totalProducts = $sanphamModel->countProducts($keyword, $category, $address);
+        $totalPages    = ($totalProducts > 0) ? ceil($totalProducts / $limit) : 1;
+
+        $products   = $sanphamModel->getProducts($keyword, $category, $address, $offset, $limit);
+        $categories = $sanphamModel->getAllCategories();
+
+        $data = [
+            'products'      => $products,
+            'categories'    => $categories,
+            'keyword'       => $keyword,
+            'category'      => $category,
+            'address'       => $address,
+            'page'          => 'list_sanpham', // Tên page để layout.php include
+            'pageNum'       => $page, // Số trang phân trang
+            'totalPages'    => $totalPages,
+            'totalProducts' => $totalProducts
+        ];
+
+        $this->view('home', $data);
+    }
+    public function detail_Sanpham($id_sanpham){
+        $productModel = $this->model('SanPhamModel');
+            $product = $productModel->getProductById($id_sanpham);
+            $productImages = $productModel->getProductImages($id_sanpham);
+            $data = [
+                'product' => $product,
+                'productImages' => $productImages,
+                'page'          => 'detail_sanpham'
+            ];
+            $this->view('home', $data);
+    }
+}
+?>
+
