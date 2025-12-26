@@ -32,6 +32,29 @@ class UserModel extends connectDB
         }
         return false;
     }
+    public function updateUser($id_user, $hoten, $sdt, $diachi, $gioithieu, $avatarUrl = null)
+{
+    $id_user = mysqli_real_escape_string($this->con, $id_user);
+    $hoten = mysqli_real_escape_string($this->con, $hoten);
+    $sdt = mysqli_real_escape_string($this->con, $sdt);
+    $diachi = mysqli_real_escape_string($this->con, $diachi);
+    $gioithieu = mysqli_real_escape_string($this->con, $gioithieu);
+
+    $sql = "UPDATE users SET 
+            hoten = '$hoten', 
+            sdt = '$sdt', 
+            diachi = '$diachi', 
+            gioithieu = '$gioithieu'";
+
+    if ($avatarUrl !== null) {
+        $avatarUrl = mysqli_real_escape_string($this->con, $avatarUrl);
+        $sql .= ", avatar = '$avatarUrl'";
+    }
+
+    $sql .= " WHERE id_user = '$id_user'";
+
+    return mysqli_query($this->con, $sql);
+}
 
     /**
      * Xác thực đăng nhập với username và password

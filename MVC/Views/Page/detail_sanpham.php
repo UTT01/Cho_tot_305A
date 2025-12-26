@@ -74,7 +74,24 @@ $mainImg = !empty($p['anh_dai_dien']) ? $p['anh_dai_dien'] : 'https://via.placeh
                         <img src="<?php echo htmlspecialchars($mainAvatar); ?>" 
                              class="rounded-circle me-3" width="60" height="60" alt="Avatar người bán">
                         <div>
-                            <h6 class="mb-0 fw-bold text-uppercase">Người bán: <?php echo htmlspecialchars($p['hoten']); ?></h6>
+                        <?php
+    // 1. Tạo link đến trang cá nhân
+                            $viewerId = isset($data['user_id']) ? $data['user_id'] : '';
+                            $sellerId = $p['id_user']; 
+                            $profileLink = "/baitaplon/User/Profile/" . $sellerId;
+                            
+                            // Nếu đang đăng nhập, nối thêm ID người xem để giữ trạng thái đăng nhập
+                            if (!empty($viewerId)) {
+                                $profileLink .= "/" . $viewerId;
+                            }
+                        ?>
+
+                        <h6 class="mb-0 fw-bold text-uppercase">
+                            Người bán: 
+                            <a href="<?php echo htmlspecialchars($profileLink); ?>" class="text-decoration-none text-dark hover-name">
+                                <?php echo htmlspecialchars($p['hoten']); ?>
+                            </a>
+                        </h6>
                             <small class="text-muted"><i class="bi bi-geo-alt-fill"></i> <?php echo htmlspecialchars($p['khu_vuc_ban']); ?></small>
                         </div>
                     </div>
@@ -141,4 +158,9 @@ $mainImg = !empty($p['anh_dai_dien']) ? $p['anh_dai_dien'] : 'https://via.placeh
         transform: scale(1.05);
         transition: 0.3s;
     }
+    .hover-name:hover {
+    color: #f59e0b !important; /* Màu cam Chợ Tốt */
+    text-decoration: underline !important;
+    cursor: pointer;
+}
 </style>

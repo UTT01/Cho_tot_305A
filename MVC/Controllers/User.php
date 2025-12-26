@@ -1,0 +1,76 @@
+<?php
+class User extends controller
+{
+    // Hiển thị trang Profile
+    // URL: /baitaplon/User/Profile/US001
+    public function Profile($profileId, $loggedInId = '')
+    {
+        $userModel = $this->model('UserModel');
+        $sanphamModel = $this->model('SanphamModel');
+
+        // 1. XỬ LÝ ID ĐĂNG NHẬP (Để giữ trạng thái Navbar)
+        // Nếu không truyền tham số thứ 2 ($loggedInId), 
+        // thì mặc định coi như đang xem profile của chính mình ($loggedInId = $profileId)
+        if (empty($loggedInId)) {
+            $loggedInId = $profileId;
+        }
+
+        // 2. Lấy thông tin người dùng CẦN XEM (Profile)
+        $userProfile = $userModel->getUserById($profileId);
+
+        // 3. Lấy sản phẩm của người đó (Sửa lỗi hiển thị tất cả sản phẩm)
+        // Tham số thứ 6 là $profileId để lọc theo User
+        $products = $sanphamModel->getProducts('', '', '', 0, 100, $profileId);
+
+        // 4. Kiểm tra quyền sở hữu (Để hiện nút Sửa)
+        $isOwner = ($loggedInId === $profileId);
+
+        $data = [
+            'page'        => 'profile',
+            'profile'     => $userProfile,
+            'products'    => $products,
+            'isOwner'     => $isOwner,
+            // Quan trọng: Truyền user_id để Navbar file home.php nhận diện đã đăng nhập
+            'user_id'     => $loggedInId, 
+            'isLoggedIn'  => !empty($loggedInId)
+        ];
+
+        $this->view('home', $data);
+    }
+
+    // Xử lý cập nhật thông tin
+    public function Update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id_user = $_POST['id_user'];
+            $hoten = $_POST['hoten'];
+            $sdt = $_POST['sdt'];
+            $diachi = $_POST['diachi'];
+            $gioithieu = $_POST['gioithieu'];
+            
+            // Xử lý upload ảnh
+            $avatarUrl = null;
+            if (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] == 0) {
+                $target_dir = "Public/images/";
+                if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
+                
+                $fileName = time() . "_" . basename($_FILES["avatar_file"]["name"]);
+                $target_file = $target_dir . $fileName;
+                
+                if (move_uploaded_file($_FILES["avatar_file"]["tmp_name"], $target_file)) {
+                    $avatarUrl = $target_file;
+                }
+            }
+
+            // Gọi Model cập nhật
+            $userModel = $this->model('UserModel');
+            $userModel->updateUser($id_user, $hoten, $sdt, $diachi, $gioithieu, $avatarUrl);
+
+            // Quay lại trang profile của chính mình
+            // Dùng urlencode để đảm bảo link đúng
+            header("Location: /baitaplon/User/Profile/" . $id_user);
+            exit();
+        }
+    }
+}
+?>
