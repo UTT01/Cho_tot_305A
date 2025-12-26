@@ -47,16 +47,22 @@ class Home extends controller
 
         $this->view('home', $data);
     }
-    public function detail_Sanpham($id_sanpham){
-        $productModel = $this->model('SanPhamModel');
-            $product = $productModel->getProductById($id_sanpham);
-            $productImages = $productModel->getProductImages($id_sanpham);
-            $data = [
-                'product' => $product,
-                'productImages' => $productImages,
-                'page'          => 'detail_sanpham'
-            ];
-            $this->view('home', $data);
+    public function detail_Sanpham($id_sanpham,$user_id = ''){
+        $productModel = $this->model('SanphamModel');
+        $product = $productModel->getProductById($id_sanpham);
+        $productImages = $productModel->getProductImages($id_sanpham);
+        
+        $userId = isset($user_id) ? $user_id : '';
+
+        $data = [
+            'product'       => $product,
+            'productImages' => $productImages,
+            'page'          => 'detail_sanpham',
+            'user_id'       => $userId,
+            'isLoggedIn'    => !empty($userId)
+        ];
+        
+        $this->view('home', $data);
     }
 }
 ?>

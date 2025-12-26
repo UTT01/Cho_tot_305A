@@ -25,7 +25,6 @@ class SanphamModel extends connectDB
         $keyword = mysqli_real_escape_string($this->con, trim($keyword));
         $category = mysqli_real_escape_string($this->con, trim($category));
         $address = mysqli_real_escape_string($this->con, trim($address));
-        $userId = mysqli_real_escape_string($this->con, trim($userId));
 
         $where = " WHERE 1 ";
         if ($keyword !== '') {
@@ -49,31 +48,17 @@ class SanphamModel extends connectDB
         return 0;
     }
 
-    public function getProducts($keyword = '', $category = '', $address = '', $offset = 0, $limit = 12, $userId = '')
+    public function getProducts($keyword = '', $category = '', $address = '', $offset = 0, $limit = 12)
     {
-        // Ép kiểu category về số nguyên cho an toàn vì ID giờ là INT
-        // Nếu category rỗng thì giữ nguyên chuỗi rỗng
-        if ($category !== '') {
-            $category = (int)$category; 
-        }
+
         
         $keyword = mysqli_real_escape_string($this->con, trim($keyword));
         $address = mysqli_real_escape_string($this->con, trim($address));
-        $userId = mysqli_real_escape_string($this->con, trim($userId));
-
         $where = " WHERE 1 ";
-        
         if ($keyword !== '') {
             $where .= " AND sp.ten_sanpham LIKE '%$keyword%'";
         }
-
-        if ($userId !== '') {
-            $where .= " AND sp.id_user = '$userId' ";
-       }
         if ($category !== '') {
-            // Logic cũ: AND sp.id_danhmuc = '$category'
-            // Logic mới: Lấy sản phẩm có id_danhmuc bằng $category 
-            //            HOẶC id_danhmuc nằm trong danh sách con của $category
             $where .= " AND (
                             sp.id_danhmuc = '$category' 
                             OR 
@@ -118,12 +103,11 @@ class SanphamModel extends connectDB
     }
     public function getProductById($id)
     {
-        // Cần JOIN để lấy thêm tên người bán (hoten), sdt, avatar và tên danh mục
         $sql = "SELECT s.*, u.hoten, u.sdt, u.avatar, d.ten_danhmuc 
                 FROM sanpham s
                 JOIN users u ON s.id_user = u.id_user
                 JOIN danhmuc d ON s.id_danhmuc = d.id_danhmuc
-                WHERE s.id_sanpham = '$id'"; // Thêm dấu nháy đơn cho ID chuỗi
+                WHERE s.id_sanpham = '$id'"; 
                 
         $result = mysqli_query($this->con, $sql);
         return mysqli_fetch_assoc($result);

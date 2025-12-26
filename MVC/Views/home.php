@@ -139,30 +139,32 @@
 <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
     <div class="container">
         <?php
-        // Kiểm tra xem controller có truyền user_id sang không
+        // 1. Xử lý logic đường dẫn chung cho cả Logo và Form tìm kiếm
         $currentUserId = isset($data['user_id']) ? $data['user_id'] : '';
         
-        // Link mặc định
-        $homeLink = "http://localhost/baitaplon/Home";
+        // Đường dẫn gốc
+        $baseUrl = "http://localhost/baitaplon/Home";
         
-        // Nếu có ID user, nối thêm vào đuôi URL
+        // Nếu đã đăng nhập (có user_id), nối thêm vào URL để giữ trạng thái đăng nhập
+        $actionUrl = $baseUrl;
         if (!empty($currentUserId)) {
-            $homeLink .= "/Get_data/" . $currentUserId;
+            $actionUrl .= "/Get_data/" . $currentUserId;
         }
-    ?>
-    <a class="navbar-brand" href="<?php echo htmlspecialchars($homeLink); ?>">
-        Chợ Tốt Clone
-    </a>
+        ?>
 
-        <!-- Form tìm kiếm chính (giữa navbar) -->
-        <form class="d-flex flex-grow-1 mx-3 search-bar align-items-center gap-2" method="GET" action="/baitaplon/Home">
+        <a class="navbar-brand" href="<?php echo htmlspecialchars($actionUrl); ?>">
+            Chợ Tốt Clone
+        </a>
+
+        <form class="d-flex flex-grow-1 mx-3 search-bar align-items-center gap-2" method="GET" action="<?php echo htmlspecialchars($actionUrl); ?>">
             <?php
             $keyword  = isset($data['keyword']) ? $data['keyword'] : '';
             $category = isset($data['category']) ? $data['category'] : '';
             $categories = isset($data['categories']) ? $data['categories'] : [];
             $address  = isset($data['address']) ? $data['address'] : '';
             ?>
-            <select class="form-select" name="danhmuc">
+            
+            <select class="form-select" name="danhmuc" onchange="this.form.submit()">
                 <option value="">Tất cả danh mục</option>
                 <?php foreach ($categories as $cat): ?>
                     <option
@@ -173,6 +175,7 @@
                     </option>
                 <?php endforeach; ?>
             </select>
+            
             <input
                 class="form-control"
                 type="text"
@@ -201,7 +204,7 @@
                     <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                 </a>
 
-                <a href="?url=User/Profile/<?php echo $data['user_id']; ?>" class="text-secondary text-decoration-none" title="Tài khoản cá nhân">
+                <a href="?url=User/Profile/<?php echo htmlspecialchars($currentUserId); ?>" class="text-secondary text-decoration-none" title="Tài khoản cá nhân">
                     <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
                 </a>
 

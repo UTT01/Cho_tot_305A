@@ -96,8 +96,21 @@ if (!function_exists('buildHomeUrl')) {
                             Đăng lúc: <?php echo htmlspecialchars($p['ngaydang']); ?>
                         </p>
 
-                        <a href="/baitaplon/Home/detail_Sanpham/<?php echo $p['id_sanpham']; ?>"
-                           class="btn btn-sm btn-outline-primary mt-auto">
+                        <?php
+                            // 1. Lấy User ID hiện tại từ dữ liệu chung
+                            $currentUserId = isset($data['user_id']) ? $data['user_id'] : '';
+
+                            // 2. Tạo link cơ bản
+                            $detailLink = "/baitaplon/Home/detail_Sanpham/" . $p['id_sanpham'];
+
+                            // 3. Nếu đang đăng nhập (có ID), nối thêm ID vào cuối link
+                            if (!empty($currentUserId)) {
+                                $detailLink .= "/" . $currentUserId;
+                            }
+                        ?>
+
+                        <a href="<?php echo htmlspecialchars($detailLink); ?>"
+                        class="btn btn-sm btn-outline-primary mt-auto">
                             Xem chi tiết
                         </a>
                     </div>
