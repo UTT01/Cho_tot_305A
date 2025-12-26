@@ -20,11 +20,12 @@ class SanphamModel extends connectDB
     }
 
     // Đếm tổng số sản phẩm (phục vụ phân trang)
-    public function countProducts($keyword = '', $category = '', $address = '')
+    public function countProducts($keyword = '', $category = '', $address = '', $userId = '')
     {
         $keyword = mysqli_real_escape_string($this->con, trim($keyword));
         $category = mysqli_real_escape_string($this->con, trim($category));
         $address = mysqli_real_escape_string($this->con, trim($address));
+        $userId = mysqli_real_escape_string($this->con, trim($userId));
 
         $where = " WHERE 1 ";
         if ($keyword !== '') {
@@ -36,7 +37,9 @@ class SanphamModel extends connectDB
         if ($address !== '') {
             $where .= " AND sp.khu_vuc_ban LIKE '%$address%'";
         }
-
+        if ($userId !== '') {
+            $where .= " AND sp.id_user = '$userId' ";
+        }
         $sql = "SELECT COUNT(*) AS total FROM sanpham sp" . $where;
         $result = mysqli_query($this->con, $sql);
         if ($result) {
@@ -46,7 +49,7 @@ class SanphamModel extends connectDB
         return 0;
     }
 
-    public function getProducts($keyword = '', $category = '', $address = '', $offset = 0, $limit = 12)
+    public function getProducts($keyword = '', $category = '', $address = '', $offset = 0, $limit = 12, $userId = '')
     {
         // Ép kiểu category về số nguyên cho an toàn vì ID giờ là INT
         // Nếu category rỗng thì giữ nguyên chuỗi rỗng
@@ -56,6 +59,7 @@ class SanphamModel extends connectDB
         
         $keyword = mysqli_real_escape_string($this->con, trim($keyword));
         $address = mysqli_real_escape_string($this->con, trim($address));
+        $userId = mysqli_real_escape_string($this->con, trim($userId));
 
         $where = " WHERE 1 ";
         
@@ -63,7 +67,9 @@ class SanphamModel extends connectDB
             $where .= " AND sp.ten_sanpham LIKE '%$keyword%'";
         }
 
-        // --- PHẦN SỬA ĐỔI QUAN TRỌNG ---
+        if ($userId !== '') {
+            $where .= " AND sp.id_user = '$userId' ";
+       }
         if ($category !== '') {
             // Logic cũ: AND sp.id_danhmuc = '$category'
             // Logic mới: Lấy sản phẩm có id_danhmuc bằng $category 

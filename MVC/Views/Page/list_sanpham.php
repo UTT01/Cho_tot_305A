@@ -63,7 +63,7 @@ if (!function_exists('buildHomeUrl')) {
                             ? $p['anh_dai_dien']
                             : 'https://via.placeholder.com/300x200?text=No+Image');
                     ?>
-                    <img src="<?php echo htmlspecialchars($img); ?>" class="card-img-top" alt="Ảnh sản phẩm" style="width:100%;height:180px;object-fit:cover;">
+                    <img src="/baitaplon/<?php echo htmlspecialchars($img); ?>" class="card-img-top" alt="Ảnh sản phẩm" style="width:100%;height:180px;object-fit:cover;">
 
                     <div class="card-body d-flex flex-column">
                         <div class="mb-1">

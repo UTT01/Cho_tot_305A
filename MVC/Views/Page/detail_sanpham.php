@@ -35,7 +35,7 @@ $mainImg = !empty($p['anh_dai_dien']) ? $p['anh_dai_dien'] : 'https://via.placeh
         <div class="col-md-6 mb-4">
             <div class="card border-0">
                 <div class="main-image-box mb-3 text-center border rounded p-2" style="background: #f8f9fa;">
-                    <img id="mainImage" src="<?php echo htmlspecialchars($mainImg); ?>" 
+                   <img id="mainImage" src="/baitaplon/<?php echo htmlspecialchars($mainImg); ?>"
                          class="img-fluid" style="max-height: 400px; object-fit: contain;" alt="Ảnh sản phẩm">
                 </div>
 
@@ -46,7 +46,7 @@ $mainImg = !empty($p['anh_dai_dien']) ? $p['anh_dai_dien'] : 'https://via.placeh
                          onclick="changeImage(this)">
                     
                     <?php foreach ($imgs as $img): ?>
-                        <img src="<?php echo htmlspecialchars($img['url_anh']); ?>" 
+                       <img src="/baitaplon/<?php echo htmlspecialchars($img['url_anh']); ?>"
                              class="img-thumbnail thumb-img" 
                              style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" 
                              onclick="changeImage(this)">

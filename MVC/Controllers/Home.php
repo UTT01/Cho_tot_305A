@@ -1,9 +1,15 @@
 <?php
 class Home extends controller
 {
-    public function Get_data()
+    public function Get_data($user_id = null)
     {
         $sanphamModel = $this->model('SanphamModel');
+
+        // Lấy user_id từ parameter (từ URL routing) hoặc từ $_GET (fallback)
+        if ($user_id === null) {
+            $user_id = isset($_GET['user_id']) ? trim($_GET['user_id']) : '';
+        }
+        $userId = !empty($user_id) ? $user_id : '';
 
         // Lấy tham số lọc/tìm kiếm từ URL
         $keyword  = isset($_GET['q']) ? trim($_GET['q']) : '';
@@ -19,10 +25,10 @@ class Home extends controller
         $offset = ($page - 1) * $limit;
 
         // Đếm tổng sản phẩm để phân trang
-        $totalProducts = $sanphamModel->countProducts($keyword, $category, $address);
+        $totalProducts = $sanphamModel->countProducts($keyword, $category, $address, $userId);
         $totalPages    = ($totalProducts > 0) ? ceil($totalProducts / $limit) : 1;
 
-        $products   = $sanphamModel->getProducts($keyword, $category, $address, $offset, $limit);
+        $products = $sanphamModel->getProducts($keyword, $category, $address, $offset, $limit, $userId);
         $categories = $sanphamModel->getAllCategories();
 
         $data = [
@@ -34,7 +40,9 @@ class Home extends controller
             'page'          => 'list_sanpham', // Tên page để layout.php include
             'pageNum'       => $page, // Số trang phân trang
             'totalPages'    => $totalPages,
-            'totalProducts' => $totalProducts
+            'totalProducts' => $totalProducts,
+            'user_id'       => $user_id,
+            'isLoggedIn'    => !empty($user_id)
         ];
 
         $this->view('home', $data);
