@@ -32,6 +32,44 @@ class UserModel extends connectDB
         }
         return false;
     }
+
+    /**
+     * Xác thực đăng nhập với username và password
+     * @param string $username Tên đăng nhập
+     * @param string $password Mật khẩu
+     * @return array|null Trả về thông tin user nếu đăng nhập thành công, null nếu thất bại
+     */
+    public function authenticate($username, $password)
+    {
+        $username = mysqli_real_escape_string($this->con, trim($username));
+        
+        // Tìm user theo username trong bảng account
+        $sql = "SELECT * FROM account WHERE username = '$username' AND trangthai = 1";
+        $result = mysqli_query($this->con, $sql);
+        
+        if ($result && mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+            
+            // Kiểm tra mật khẩu
+            // Hỗ trợ cả password đã hash (password_hash) và plain text
+            $storedPassword = $user['password'];
+            
+            // Nếu password bắt đầu bằng $2y$ hoặc $2a$ thì là password đã hash
+            if (strpos($storedPassword, '$2y$') === 0 || strpos($storedPassword, '$2a$') === 0) {
+                // Kiểm tra password đã hash
+                if (password_verify($password, $storedPassword)) {
+                    return $user;
+                }
+            } else {
+                // So sánh password plain text (để tương thích với dữ liệu cũ)
+                if ($password === $storedPassword) {
+                    return $user;
+                }
+            }
+        }
+        
+        return null;
+    }
 }
 ?>
 

@@ -25,10 +25,10 @@ class Home extends controller
         $offset = ($page - 1) * $limit;
 
         // Đếm tổng sản phẩm để phân trang
-        $totalProducts = $sanphamModel->countProducts($keyword, $category, $address, $userId);
+        $totalProducts = $sanphamModel->countProducts($keyword, $category, $address, '');
         $totalPages    = ($totalProducts > 0) ? ceil($totalProducts / $limit) : 1;
 
-        $products = $sanphamModel->getProducts($keyword, $category, $address, $offset, $limit, $userId);
+        $products = $sanphamModel->getProducts($keyword, $category, $address, $offset, $limit, '');
         $categories = $sanphamModel->getAllCategories();
 
         $data = [

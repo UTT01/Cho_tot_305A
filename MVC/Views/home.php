@@ -10,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         /* Tổng thể giao diện: tông màu dịu, nhẹ mắt */
@@ -136,9 +138,21 @@
 <!-- Thanh navbar trên cùng -->
 <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="http://localhost/baitaplon/Home">
-            Chợ Tốt Clone
-        </a>
+        <?php
+        // Kiểm tra xem controller có truyền user_id sang không
+        $currentUserId = isset($data['user_id']) ? $data['user_id'] : '';
+        
+        // Link mặc định
+        $homeLink = "http://localhost/baitaplon/Home";
+        
+        // Nếu có ID user, nối thêm vào đuôi URL
+        if (!empty($currentUserId)) {
+            $homeLink .= "/Get_data/" . $currentUserId;
+        }
+    ?>
+    <a class="navbar-brand" href="<?php echo htmlspecialchars($homeLink); ?>">
+        Chợ Tốt Clone
+    </a>
 
         <!-- Form tìm kiếm chính (giữa navbar) -->
         <form class="d-flex flex-grow-1 mx-3 search-bar align-items-center gap-2" method="GET" action="/baitaplon/Home">
@@ -176,9 +190,29 @@
             <button class="btn btn-warning btn-search" type="submit">Tìm kiếm</button>
         </form>
 
-        <div class="d-flex">
-            <a href="?url=Auth/Login" class="btn btn-outline-secondary me-2">Đăng nhập</a>
-            <a href="?url=Auth/Register" class="btn btn-warning">Đăng ký</a>
+        <div class="d-flex align-items-center gap-3">
+            <?php if (isset($data['isLoggedIn']) && $data['isLoggedIn']): ?>
+                <a href="?url=Sanpham/DangTin" class="btn btn-warning fw-bold text-dark">
+                    <i class="bi bi-pencil-square"></i> Đăng tin
+                </a>
+
+                <a href="?url=Chat" class="text-secondary position-relative text-decoration-none" title="Tin nhắn">
+                    <i class="bi bi-chat-dots-fill" style="font-size: 1.5rem;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </a>
+
+                <a href="?url=User/Profile/<?php echo $data['user_id']; ?>" class="text-secondary text-decoration-none" title="Tài khoản cá nhân">
+                    <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                </a>
+
+                <a href="?url=Auth/Logout" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                    Đăng xuất
+                </a>
+
+            <?php else: ?>
+                <a href="/baitaplon/Login/Get_data/" class="btn btn-outline-secondary me-2">Đăng nhập</a>
+                <a href="/baitaplon/Auth/Register" class="btn btn-warning">Đăng ký</a>
+            <?php endif; ?>
         </div>
     </div>
 </nav>
