@@ -1,31 +1,36 @@
 <?php
+// app/controllers/Home.php
 require_once __DIR__ . '/../models/SanphamModel.php';
+
 class Home
 {
+    private $conn;
+
+    // 1. Nhận $conn từ index.php
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
+
     public function Get_data($user_id = null)
     {
-        $sanphamModel = $this->model('SanphamModel');
+        // 2. Khởi tạo Model trực tiếp với $this->conn
+        $sanphamModel = new SanphamModel($this->conn);
 
-        // Lấy user_id từ parameter (từ URL routing) hoặc từ $_GET (fallback)
         if ($user_id === null) {
             $user_id = isset($_GET['user_id']) ? trim($_GET['user_id']) : '';
         }
         $userId = !empty($user_id) ? $user_id : '';
 
-        // Lấy tham số lọc/tìm kiếm từ URL
         $keyword  = isset($_GET['q']) ? trim($_GET['q']) : '';
         $category = isset($_GET['danhmuc']) ? trim($_GET['danhmuc']) : '';
         $address  = isset($_GET['diachi']) ? trim($_GET['diachi']) : '';
         $page     = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($page < 1) $page = 1;
 
-        // Debug: Uncomment to see what values are being received
-        // error_log("Search params - keyword: '$keyword', category: '$category', address: '$address'");
-
-        $limit  = 12; // số sản phẩm / 1 trang
+        $limit  = 12;
         $offset = ($page - 1) * $limit;
 
-        // Đếm tổng sản phẩm để phân trang
         $totalProducts = $sanphamModel->countProducts($keyword, $category, $address, '');
         $totalPages    = ($totalProducts > 0) ? ceil($totalProducts / $limit) : 1;
 
@@ -38,18 +43,22 @@ class Home
             'keyword'       => $keyword,
             'category'      => $category,
             'address'       => $address,
-            'page'          => 'list_sanpham', // Tên page để layout.php include
-            'pageNum'       => $page, // Số trang phân trang
+            'page'          => 'list_sanpham',
+            'pageNum'       => $page,
             'totalPages'    => $totalPages,
             'totalProducts' => $totalProducts,
             'user_id'       => $user_id,
             'isLoggedIn'    => !empty($user_id)
         ];
 
-        $this->view('home', $data);
+        // 3. Gọi View trực tiếp (không qua hàm trung gian)
+        // Biến $data sẽ được dùng trong view home.php
+        require_once __DIR__ . '/../views/home.php';
     }
-    public function detail_Sanpham($id_sanpham,$user_id = ''){
-        $productModel = $this->model('SanphamModel');
+
+    public function detail_Sanpham($id_sanpham, $user_id = '')
+    {
+        $productModel = new SanphamModel($this->conn);
         $product = $productModel->getProductById($id_sanpham);
         $productImages = $productModel->getProductImages($id_sanpham);
         
@@ -63,8 +72,7 @@ class Home
             'isLoggedIn'    => !empty($userId)
         ];
         
-        $this->view('home', $data);
+        require_once __DIR__ . '/../views/home.php';
     }
 }
 ?>
-

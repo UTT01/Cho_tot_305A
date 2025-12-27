@@ -12,11 +12,6 @@ class Login {
      */
     protected function model($modelName)
     {
-        // Đảm bảo BaseClasses đã được load
-        if (!class_exists('connectDB')) {
-            require_once __DIR__ . '/../config/BaseClasses.php';
-        }
-        
         $modelFile = __DIR__ . '/../models/' . $modelName . '.php';
         if (file_exists($modelFile)) {
             require_once $modelFile;

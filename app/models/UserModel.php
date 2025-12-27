@@ -1,9 +1,11 @@
 <?php
-class UserModel extends connectDB
+class UserModel
 {
-    public function __construct()
+    private $con;
+
+    public function __construct($conn)
     {
-        parent::__construct();
+        $this->con = $conn;
     }
 
     public function getUserById($id_user)
